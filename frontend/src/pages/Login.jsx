@@ -45,6 +45,8 @@ function Login() {
   return (
     <div className="login-page">
       <div className="login-card">
+                              <img src="/baysideclinicblack.png" alt="Bayside Clinical" style={{ width: "72px", height: "72px", borderRadius: "10px", objectFit: "cover" }} />
+
         <h1>Bayside Clinical</h1>
         <p>Clinic Management System</p>
 
