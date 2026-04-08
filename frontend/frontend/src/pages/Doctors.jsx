@@ -94,7 +94,7 @@ function Doctors() {
       <div className="layout">
         <aside className="sidebar">
           <div className="sidebar-brand">
-            <img src="/Baysideclinic.png" alt="logo" style={{ width: "36px", height: "36px", borderRadius: "10px", objectFit: "cover", marginBottom: "12px" }} />
+                    <img src="/baysideclinic.png" alt="Bayside Clinical" style={{ width: "72px", height: "72px", borderRadius: "10px", objectFit: "cover" }} />
             <h2>Bayside Clinical</h2>
             <p>Management System</p>
           </div>

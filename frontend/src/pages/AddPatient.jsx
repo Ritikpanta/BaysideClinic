@@ -5,13 +5,9 @@ const styles = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
   .layout { display: flex; min-height: 100vh; background: #f0f4f8; font-family: 'DM Sans', sans-serif; }
-  .sidebar { width: 260px; 
-              background: #0a1628; 
-              display: flex; 
-              flex-direction: column; 
-              position: fixed; 
-              top: 0; left: 0; height: 100vh; z-index: 100; }
+  .sidebar { width: 260px; background: #0a1628; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; }
   .sidebar-brand { padding: 28px 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .brand-icon { width: 36px; height: 36px; background: #2563eb; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; font-size: 18px; }
   .sidebar-brand h2 { color: white; font-size: 16px; font-weight: 600; }
   .sidebar-brand p { color: rgba(255,255,255,0.4); font-size: 11px; margin-top: 2px; letter-spacing: 0.5px; text-transform: uppercase; }
   .sidebar-nav { padding: 16px 12px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
@@ -110,7 +106,7 @@ function AddPatient() {
       <div className="layout">
         <aside className="sidebar">
           <div className="sidebar-brand">
-           <img src="/baysideclinic.png" alt="Bayside Clinical" style={{ width: "72px", height: "72px", borderRadius: "10px", objectFit: "cover" }} />
+            <div className="brand-icon">🏥</div>
             <h2>Bayside Clinical</h2>
             <p>Management System</p>
           </div>

@@ -92,7 +92,7 @@ function Settings() {
       <div className="layout">
         <aside className="sidebar">
           <div className="sidebar-brand">
-            <div className="brand-icon">🏥</div>
+           <img src="/baysideclinic.png" alt="Bayside Clinical" style={{ width: "72px", height: "72px", borderRadius: "10px", objectFit: "cover" }} />
             <h2>Bayside Clinical</h2>
             <p>Management System</p>
           </div>
