@@ -5,15 +5,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import config
 
 app = Flask(__name__)
-CORS(
-    app,
-    origins=[
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "https://baysideclinic.vercel.app"
-    ],
-    supports_credentials=True
-)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
+
 def get_db():
     db = mysql.connector.connect(
         host=config.DB_HOST,
@@ -21,12 +14,10 @@ def get_db():
         user=config.DB_USER,
         password=config.DB_PASSWORD,
         database=config.DB_NAME,
-        consume_results=True
+        ssl_disabled=False
     )
     cursor = db.cursor(dictionary=True)
     return db, cursor
-
-
 # ── Test ──────────────────────────────────────────────────────────────────────
 @app.route('/api/test-db', methods=['GET'])
 def test_db():
