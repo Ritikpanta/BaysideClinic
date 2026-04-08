@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import API_URL from "../config";
+
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap');
@@ -248,6 +250,15 @@ const styles = `
 
   .signup-link a:hover { text-decoration: underline; }
 `;
+const API_URL = import.meta.env.VITE_API_URL;
+
+fetch(`${API_URL}/api/login`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ username, password })
+});
 
 function Login() {
   const [formData, setFormData] = useState({ username: "", password: "" });
@@ -260,7 +271,7 @@ function Login() {
     e.preventDefault();
     setMessage("");
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/login", {
+      const response = await fetch("`${API_URL}/api/login`", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
