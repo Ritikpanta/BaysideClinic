@@ -10,11 +10,11 @@ import AddDoctor from "./pages/AddDoctor";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import Register from "./pages/Register";
-import PatientLogin from "./pages/PatientLogin";
-import PatientRegister from "./pages/PatientRegister";
-import PatientDashboard from "./pages/PatientDashboard";
-import DoctorLogin from "./pages/DoctorLogin";
-import DoctorDashboard from "./pages/DoctorDashboard";
+import PatientLogin from "./pages/Patientlogin";
+import PatientRegister from "./pages/Patientregister";
+import PatientDashboard from "./pages/Patientdashboard";
+import DoctorLogin from "./pages/Doctorlogin";
+import DoctorDashboard from "./pages/Doctordashboard";
 
 function AdminRoute({ children }) {
   return localStorage.getItem("user") ? children : <Navigate to="/" replace />;
