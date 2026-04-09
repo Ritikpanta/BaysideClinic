@@ -109,14 +109,14 @@ function DoctorDashboard() {
   }, []);
 
   const fetchAppointments = () => {
-    fetch(`http://127.0.0.1:5000/api/doctor/appointments/${doctor?.doctor_id}`)
+    fetch(`${API_URL}/api/doctor/appointments/${doctor?.doctor_id}`)
       .then(r => r.json()).then(setAppointments).catch(() => {});
   };
 
   const showToast = msg => { setToast(msg); setTimeout(() => setToast(""), 3000); };
 
   const updateStatus = async (apptId, status) => {
-    const res = await fetch(`http://127.0.0.1:5000/api/doctor/appointments/${apptId}/status`, {
+    const res = await fetch(`${API_URL}/api/doctor/appointments/${apptId}/status`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
@@ -125,7 +125,7 @@ function DoctorDashboard() {
   };
 
   const toggleAvailability = async (status) => {
-    const res = await fetch(`http://127.0.0.1:5000/api/doctor/availability/${doctor?.doctor_id}`, {
+    const res = await fetch(`${API_URL}/api/doctor/availability/${doctor?.doctor_id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),

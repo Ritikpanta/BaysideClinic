@@ -74,7 +74,7 @@ function Doctors() {
   const navigate = useNavigate();
 
   const fetchDoctors = () => {
-    fetch("http://127.0.0.1:5000/api/doctors")
+    fetch(`${API_URL}/api/doctors`)
       .then(r => r.json()).then(setDoctors).catch(() => {});
   };
 
@@ -82,7 +82,7 @@ function Doctors() {
 
   const handleDelete = async (id) => {
     if (!confirm("Remove this doctor from the system?")) return;
-    await fetch(`http://127.0.0.1:5000/api/doctors/${id}`, { method: "DELETE" });
+    await fetch(`${API_URL}/api/doctors/${id}`, { method: "DELETE" });
     fetchDoctors();
   };
 

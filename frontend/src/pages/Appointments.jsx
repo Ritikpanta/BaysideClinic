@@ -78,7 +78,7 @@ function Appointments() {
   const navigate = useNavigate();
 
   const fetchAppointments = () => {
-    fetch("http://127.0.0.1:5000/api/appointments")
+    fetch(`${API_URL}/api/appointments`)
       .then(r => r.json()).then(setAppointments).catch(() => {});
   };
 
@@ -86,7 +86,7 @@ function Appointments() {
 
   const handleDelete = async (id) => {
     if (!confirm("Delete this appointment?")) return;
-    await fetch(`http://127.0.0.1:5000/api/appointments/${id}`, { method: "DELETE" });
+    await fetch(`${API_URL}/api/appointments/${id}`, { method: "DELETE" });
     fetchAppointments();
   };
 

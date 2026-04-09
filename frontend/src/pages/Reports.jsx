@@ -85,8 +85,8 @@ function Reports() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/api/patients").then(r => r.json()).then(setPatients).catch(() => {});
-    fetch("http://127.0.0.1:5000/api/appointments").then(r => r.json()).then(setAppointments).catch(() => {});
+    fetch(`${API_URL}/api/patients`).then(r => r.json()).then(setPatients).catch(() => {});
+    fetch(`${API_URL}/api/appointments`).then(r => r.json()).then(setAppointments).catch(() => {});
   }, []);
 
   const handleLogout = () => { localStorage.removeItem("user"); navigate("/"); };

@@ -394,9 +394,9 @@ function Dashboard() {
   const [appointments, setAppointments] = useState([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/api/patients")
+    fetch(`${API_URL}/api/patients`)
       .then(r => r.json()).then(setPatients).catch(() => {});
-    fetch("http://127.0.0.1:5000/api/appointments")
+    fetch(`${API_URL}/api/appointments`)
       .then(r => r.json()).then(setAppointments).catch(() => {});
   }, []);
 

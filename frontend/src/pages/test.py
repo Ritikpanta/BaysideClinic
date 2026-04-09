@@ -1,2 +1,2 @@
 from werkzeug.security import generate_password_hash
-print(generate_password_hash("ritikhero123"))
+print(generate_password_hash("pratiksha123"))

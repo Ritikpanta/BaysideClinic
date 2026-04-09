@@ -395,7 +395,7 @@ function AddDoctor() {
         experience_years: formData.experience_years === "" ? null : Number(formData.experience_years),
       };
 
-      const response = await fetch("http://127.0.0.1:5000/api/doctors", {
+      const response = await fetch(`${API_URL}/api/doctors`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

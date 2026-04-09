@@ -105,12 +105,12 @@ function PatientDashboard() {
   }, []);
 
   const fetchDoctors = () => {
-    fetch("http://127.0.0.1:5000/api/patient/doctors")
+    fetch(`${API_URL}/api/patient/doctors`)
       .then(r => r.json()).then(setDoctors).catch(() => {});
   };
 
   const fetchAppointments = () => {
-    fetch(`http://127.0.0.1:5000/api/patient/appointments/${patient?.patient_id}`)
+    fetch(`${API_URL}/api/patient/appointments/${patient?.patient_id}`)
       .then(r => r.json()).then(setAppointments).catch(() => {});
   };
 
@@ -122,7 +122,7 @@ function PatientDashboard() {
   const handleBook = async () => {
     if (!bookingDate) return;
     try {
-      const res = await fetch("http://127.0.0.1:5000/api/patient/appointments", {
+      const res = await fetch(`${API_URL}/api/patient/appointments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ patient_id: patient.patient_id, doctor_id: bookingDoctor.id, appointment_date: bookingDate }),
@@ -138,7 +138,7 @@ function PatientDashboard() {
 
   const handleCancel = async (id) => {
     if (!confirm("Cancel this appointment?")) return;
-    const res = await fetch(`http://127.0.0.1:5000/api/patient/appointments/${id}/cancel`, { method: "PATCH" });
+    const res = await fetch(`${API_URL}/api/patient/appointments/${id}/cancel`, { method: "PATCH" });
     if (res.ok) { fetchAppointments(); showToast("Appointment cancelled"); }
   };
 

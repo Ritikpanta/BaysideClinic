@@ -49,7 +49,7 @@ function PatientRegister() {
     e.preventDefault();
     setError(""); setSuccess("");
     try {
-      const res = await fetch("http://127.0.0.1:5000/api/patient/register", {
+      const res = await fetch(`${API_URL}/api/patient/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
