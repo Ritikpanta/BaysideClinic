@@ -13,6 +13,8 @@ const styles = `
   .sidebar-brand p { color: rgba(255,255,255,0.4); font-size: 10px; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
   .portal-tag { display: inline-block; background: rgba(16,185,129,0.2); color: #6ee7b7; font-size: 10px; padding: 3px 8px; border-radius: 10px; margin-top: 8px; font-weight: 500; }
   .sidebar-nav { padding: 16px 10px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .Image  { width: 100%;
+    height: auto;}
   .nav-btn { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; color: rgba(255,255,255,0.55); font-size: 13px; background: none; border: none; cursor: pointer; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
   .nav-btn:hover { background: rgba(255,255,255,0.07); color: white; }
   .nav-btn.active { background: #059669; color: white; font-weight: 500; }
@@ -152,7 +154,10 @@ function DoctorDashboard() {
       <div className="layout">
         <aside className="sidebar">
           <div className="sidebar-brand">
-            <img src="/Baysideclinic.png" alt="logo" />
+            <div className="Image">
+                                   <img src="/baysideclinic.png" alt="Bayside Clinical" style={{ width: "72px", height: "72px", borderRadius: "10px", objectFit: "cover" }} />
+
+            </div>
             <h2>Bayside Clinical</h2>
             <p>Management System</p>
             <span className="portal-tag">Doctor Portal</span>

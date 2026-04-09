@@ -163,39 +163,39 @@ function Login() {
       padding: 40px;
     }
 
-    .auth-card-wrapper {
-      position: relative;
-      padding-top: 110px;
-      width: 100%;
-      max-width: 400px;
-    }
+    
+.auth-card-wrapper {
+  position: relative;
+  padding-top: 110px;
+  width: 100%;
+  max-width: 800px;  
+}
 
-    .auth-card-doctor {
-      position: absolute;
-      top: -10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 200px;
-      height: auto;
-      pointer-events: none;
-      filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.2));
-      z-index: 2;
-    }
+.auth-card-doctor {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 240px;
+  height: auto;
+  pointer-events: none;
+  filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.2));
+  z-index: 2;
+}
 
-    .auth-card {
-      background: white;
-      border-radius: 20px;
-      padding: 40px;
-      padding-top: 90px;
-      width: 100%;
-      border: 1px solid #e8edf2;
-      box-shadow:
-        0 8px 40px rgba(0,0,0,0.1),
-        0 2px 8px rgba(0,0,0,0.06);
-      position: relative;
-      z-index: 1;
-    }
-
+.auth-card {
+  background: white;
+  border-radius: 20px;
+  padding: 58px;     
+  padding-top: 90px;
+  width: 100%;
+  border: px solid #e8edf2;
+  box-shadow:
+    0 8px 40px rgba(0,0,0,0.1),
+    0 2px 8px rgba(0,0,0,0.06);
+  position: relative;
+  z-index: 1;
+}
     .auth-card h2 {
       font-family: 'Bitcount Grid Double' , helvetica, poppins, serif;
       font-size: 26px;
