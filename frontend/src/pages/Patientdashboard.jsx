@@ -154,8 +154,18 @@ function PatientDashboard() {
       <div className="layout">
         <aside className="sidebar">
           <div className="sidebar-brand">
-            <img src="/Baysideclinic.png" alt="logo" />
-            <h2>Bayside Clinical</h2>
+             <img
+              src="/baysideclinic.png"
+              alt="Bayside Clinical"
+              style={{
+                width: "100px",
+                height: "100px",
+                borderRadius: "10px",
+                objectFit: "cover",
+                margin: "center"
+              }}
+            />
+            
             <p>Management System</p>
             <span className="portal-tag">Patient Portal</span>
           </div>

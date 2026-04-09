@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API_URL from "../config";
+import doctorImg from "../assets/Doctorimg.png";
 
 function Login() {
   const [formData, setFormData] = useState({ username: "", password: "" });
@@ -38,9 +39,10 @@ function Login() {
   };
 
   const styles = `
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Bitcount+Grid+Double:wght@100..900&family=Instrument+Serif:ital@0;1&display=swap');
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'DM Sans', sans-serif; }
+  
+    body { font-family:  'DM Sans', sans-serif; }
 
     .auth-page {
       min-height: 100vh;
@@ -66,16 +68,10 @@ function Login() {
     }
 
     .auth-left .brand img {
-      width: 40px;
-      height: 40px;
+      width: 100px;
+      height: 100px;
       border-radius: 10px;
       object-fit: cover;
-    }
-
-    .auth-left .brand span {
-      color: white;
-      font-size: 16px;
-      font-weight: 600;
     }
 
     .portal-badge {
@@ -167,28 +163,53 @@ function Login() {
       padding: 40px;
     }
 
+    .auth-card-wrapper {
+      position: relative;
+      padding-top: 110px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .auth-card-doctor {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: auto;
+      pointer-events: none;
+      filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.2));
+      z-index: 2;
+    }
+
     .auth-card {
       background: white;
       border-radius: 20px;
       padding: 40px;
+      padding-top: 90px;
       width: 100%;
-      max-width: 400px;
       border: 1px solid #e8edf2;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      box-shadow:
+        0 8px 40px rgba(0,0,0,0.1),
+        0 2px 8px rgba(0,0,0,0.06);
+      position: relative;
+      z-index: 1;
     }
 
     .auth-card h2 {
-      font-family: helvetica, poppins, serif;
+      font-family: 'Bitcount Grid Double' , helvetica, poppins, serif;
       font-size: 26px;
       color: #0a1628;
       font-weight: 400;
       margin-bottom: 6px;
+      text-align: center;
     }
 
     .auth-card .sub {
       font-size: 13px;
       color: #94a3b8;
       margin-bottom: 28px;
+      text-align: center;
     }
 
     .form-group {
@@ -248,59 +269,19 @@ function Login() {
       font-size: 13px;
       margin-bottom: 16px;
     }
-
-    .divider {
-      text-align: center;
-      font-size: 13px;
-      color: #94a3b8;
-      margin: 20px 0;
-      position: relative;
-    }
-
-    .divider::before, .divider::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      width: 42%;
-      height: 1px;
-      background: #e2e8f0;
-    }
-
-    .divider::before { left: 0; }
-    .divider::after { right: 0; }
-
-    .signup-link {
-      text-align: center;
-      font-size: 13px;
-      color: #64748b;
-      margin-top: 16px;
-    }
-
-    .signup-link a {
-      color: #2563eb;
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    .signup-link a:hover { text-decoration: underline; }
   `;
 
   return (
     <>
       <style>{styles}</style>
       <div className="auth-page">
+
+        {/* Left Panel */}
         <div className="auth-left">
           <div className="brand">
             <img
               src="/baysideclinic.png"
               alt="Bayside Clinical"
-              style={{
-                width: "100px",
-                height: "100px",
-                borderRadius: "10px",
-                objectFit: "cover",
-                margin: "center"
-              }}
             />
           </div>
 
@@ -342,46 +323,57 @@ function Login() {
           </div>
         </div>
 
+        {/* Right Panel */}
         <div className="auth-right">
-          <div className="auth-card">
-            <h2>Admin Sign In</h2>
-            <p className="sub">Enter your admin credentials to access the dashboard.</p>
+          <div className="auth-card-wrapper">
 
-            {message && <div className="error-msg">⚠️ {message}</div>}
+            {/* Doctor image floating above card */}
+            <img
+              src={doctorImg}
+              alt="Doctor"
+              className="auth-card-doctor"
+            />
 
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label className="form-label">Username</label>
-                <input
-                  className="form-input"
-                  type="text"
-                  name="username"
-                  placeholder="Enter your username"
-                  value={formData.username}
-                  onChange={handleChange}
-                />
-              </div>
+            <div className="auth-card">
+              <h2>ADMIN SIGN IN</h2>
+              <p className="sub">Enter your admin credentials to access the dashboard.</p>
 
-              <div className="form-group">
-                <label className="form-label">Password</label>
-                <input
-                  className="form-input"
-                  type="password"
-                  name="password"
-                  placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={handleChange}
-                />
-              </div>
+              {message && <div className="error-msg">⚠️ {message}</div>}
 
-              <button type="submit" className="btn-submit">
-                Sign In
-              </button>
-            </form>
+              <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                  <label className="form-label">Username</label>
+                  <input
+                    className="form-input"
+                    type="text"
+                    name="username"
+                    placeholder="Enter your username"
+                    value={formData.username}
+                    onChange={handleChange}
+                  />
+                </div>
 
-            
+                <div className="form-group">
+                  <label className="form-label">Password</label>
+                  <input
+                    className="form-input"
+                    type="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    value={formData.password}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <button type="submit" className="btn-submit">
+                  Sign In
+                </button>
+              </form>
+            </div>
+
           </div>
         </div>
+
       </div>
     </>
   );
