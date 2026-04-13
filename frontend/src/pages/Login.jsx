@@ -7,36 +7,43 @@ function Login() {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+  const [locked, setLocked] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+    const handleSubmit = async (e) => {
+  e.preventDefault();
+  setMessage("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage("");
+  try {
+    const response = await fetch(`${API_URL}/api/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    });
 
-    try {
-      const response = await fetch(`${API_URL}/api/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      });
+    const data = await response.json();
 
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem("user", JSON.stringify(data));
-        navigate("/dashboard");
-      } else {
-        setMessage(data.message || "Login failed");
-      }
-    } catch (error) {
-      setMessage("Server connection failed");
+    if (response.status === 429) {
+      setMessage(data.message);
+      setLocked(true);
+      return;
     }
-  };
+
+    if (response.ok) {
+      localStorage.setItem("user", JSON.stringify(data));
+      navigate("/dashboard");
+    } else {
+      setMessage(data.message || "Invalid username or password");
+      setLocked(false);
+    }
+  } catch (error) {
+    setMessage("Server connection failed");
+  }
+};
 
   const styles = `
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Bitcount+Grid+Double:wght@100..900&family=Instrument+Serif:ital@0;1&display=swap');
@@ -282,6 +289,7 @@ function Login() {
             <img
               src="/baysideclinic.png"
               alt="Bayside Clinical"
+              style={{ width: '200px', marginLeft: '55px' }}
             />
           </div>
 
@@ -365,9 +373,9 @@ function Login() {
                   />
                 </div>
 
-                <button type="submit" className="btn-submit">
-                  Sign In
-                </button>
+                            <button type="submit" className="btn-submit" disabled={locked}>
+              {locked ? "Locked" : "Sign In"}
+            </button>
               </form>
             </div>
 

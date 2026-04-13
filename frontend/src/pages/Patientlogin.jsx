@@ -136,6 +136,7 @@ function PatientLogin() {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [locked, setLocked] = useState(false);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -147,16 +148,23 @@ function PatientLogin() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
+            if (res.status === 429) {
+        setError(data.message);
+        setLocked(true);
+        return;
+      }
+
       if (res.ok) {
         localStorage.setItem("patient", JSON.stringify(data));
         navigate("/patient/dashboard");
       } else {
-        setError(data.message);
+        setError(data.message || "Invalid username or password");
       }
     } catch {
       setError("Server connection failed");
     }
   };
+  
 
   return (
     <>
@@ -166,7 +174,11 @@ function PatientLogin() {
         {/* Left Panel */}
         <div className="auth-left">
           <div className="brand">
-            <img src="/baysideclinic.png" alt="Bayside Clinical" />
+            <img
+              src="/baysideclinic.png"
+              alt="Bayside Clinical"
+              style={{ width: '150px', marginLeft: '55px', objectFit: 'cover' }}
+            />
           </div>
           <div className="portal-badge">🏥 Patient Portal</div>
           <h1>Your health, your care</h1>
@@ -187,37 +199,43 @@ function PatientLogin() {
               className="auth-card-doctor"
             />
 
-            <div className="auth-card">
-              <h2>PATIENT SIGN IN</h2>
-              <p className="sub">Welcome back! Enter your credentials to continue.</p>
-              {error && <div className="error-msg">⚠️ {error}</div>}
+                  <div className="auth-card">
+          <h2>PATIENT SIGN IN</h2>
+          <p className="sub">Welcome back! Enter your credentials to continue.</p>
+          {error && <div className="error-msg">⚠️ {error}</div>}
 
-              <div className="form-group">
-                <label className="form-label">Username</label>
-                <input
-                  className="form-input"
-                  placeholder="Enter your username"
-                  value={formData.username}
-                  onChange={e => setFormData({ ...formData, username: e.target.value })}
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Password</label>
-                <input
-                  className="form-input"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={e => setFormData({ ...formData, password: e.target.value })}
-                />
-              </div>
-              <button className="btn-submit" onClick={handleSubmit}>Sign In</button>
-
-              <div className="divider">or</div>
-              <div className="register-link">
-                New patient? <Link to="/patient/register">Create an account →</Link>
-              </div>
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label className="form-label">Username</label>
+              <input
+                className="form-input"
+                placeholder="Enter your username"
+                value={formData.username}
+                onChange={e => setFormData({ ...formData, username: e.target.value })}
+              />
             </div>
+
+            <div className="form-group">
+              <label className="form-label">Password</label>
+              <input
+                className="form-input"
+                type="password"
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={e => setFormData({ ...formData, password: e.target.value })}
+              />
+            </div>
+
+            <button type="submit" className="btn-submit" disabled={locked}>
+              {locked ? "Locked" : "Sign In"}
+            </button>
+          </form>
+
+          <div className="divider">or</div>
+          <div className="register-link">
+            New patient? <Link to="/patient/register">Create an account →</Link>
+          </div>
+        </div>
 
           </div>
         </div>

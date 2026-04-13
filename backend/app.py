@@ -3,6 +3,8 @@ from flask_cors import CORS
 import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
 import config
+from lockout_helper import check_lockout, record_failed_attempt, reset_lockout
+import re
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -14,7 +16,8 @@ def get_db():
         user=config.DB_USER,
         password=config.DB_PASSWORD,
         database=config.DB_NAME,
-        ssl_disabled=False
+        ssl_disabled=False,
+        consume_results=True
     )
     cursor = db.cursor(dictionary=True)
     return db, cursor
@@ -46,83 +49,246 @@ def register():
     except mysql.connector.Error as err:
         return jsonify({"message": str(err)}), 500
 
-
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
-    username, password = data.get('username'), data.get('password')
+    username = (data.get('username') or '').strip()
+    password = (data.get('password') or '').strip()
+
     if not username or not password:
         return jsonify({"message": "Username and password are required"}), 400
+
+    db, cursor = get_db()
+
     try:
-        db, cursor = get_db()
+        is_locked, lock_msg, seconds_remaining = check_lockout(cursor, "users", username)
+        if is_locked:
+            return jsonify({
+                "message": lock_msg,
+                "seconds_remaining": seconds_remaining
+            }), 429
+
         cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
-        user = cursor.fetchone(); cursor.close(); db.close()
-        if user and check_password_hash(user['password'], password):
-            return jsonify({"message": "Login successful", "role": user['role'], "username": user['username']}), 200
-        return jsonify({"message": "Invalid username or password"}), 401
-    except mysql.connector.Error as err:
-        return jsonify({"message": str(err)}), 500
+        user = cursor.fetchone()
 
+        if not user or not user.get('password') or not check_password_hash(user['password'], password):
+            record_failed_attempt(cursor, db, "users", username)
+            return jsonify({"message": "Invalid username or password"}), 401
 
+        reset_lockout(cursor, db, "users", username)
+
+        return jsonify({
+            "message": "Login successful",
+            "role": user['role'],
+            "username": user['username']
+        }), 200
+
+    except Exception as e:
+        print("ADMIN LOGIN ERROR:", e)
+        return jsonify({"message": "Server error"}), 500
+
+    finally:
+        cursor.close()
+        db.close()
 # ── Patient Auth ──────────────────────────────────────────────────────────────
 @app.route('/api/patient/register', methods=['POST'])
 def patient_register():
     data = request.get_json()
-    name, username, password = data.get('name'), data.get('username'), data.get('password')
-    if not name or not username or not password:
-        return jsonify({"message": "Name, username and password are required"}), 400
+
+    name = (data.get('name') or '').strip()
+    username = (data.get('username') or '').strip()
+    password = (data.get('password') or '').strip()
+    email = (data.get('email') or '').strip()
+    phone = (data.get('phone') or '').strip()
+    gender = (data.get('gender') or '').strip()
+    age_raw = (data.get('age') or '').strip()
+
+    name_pattern = r"^[A-Za-z\s'-]{2,50}$"
+    username_pattern = r'^[a-zA-Z0-9_]{4,20}$'
+    email_pattern = r'^[^\s@]+@[^\s@]+\.[^\s@]+$'
+    phone_pattern = r'^\d{10}$'
+    password_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#_\-]).{8,}$'
+
+    if not name:
+        return jsonify({"message": "Full name is required", "field": "name"}), 400
+    if not re.match(name_pattern, name):
+        return jsonify({"message": "Enter a proper full name", "field": "name"}), 400
+    if len(name.split()) < 2:
+        return jsonify({"message": "Please enter first and last name", "field": "name"}), 400
+
+    if not username:
+        return jsonify({"message": "Username is required", "field": "username"}), 400
+    if not re.match(username_pattern, username):
+        return jsonify({
+            "message": "Username must be 4 to 20 characters and contain only letters, numbers, or underscore",
+            "field": "username"
+        }), 400
+
+    if not password:
+        return jsonify({"message": "Password is required", "field": "password"}), 400
+    if not re.match(password_pattern, password):
+        return jsonify({
+            "message": "Password must be at least 8 characters and include uppercase, lowercase, number, and special character",
+            "field": "password"
+        }), 400
+
+    if not age_raw:
+        return jsonify({"message": "Age is required", "field": "age"}), 400
+    try:
+        age = int(age_raw)
+        if age < 1 or age > 120:
+            return jsonify({"message": "Enter a valid age between 1 and 120", "field": "age"}), 400
+    except ValueError:
+        return jsonify({"message": "Age must be a valid number", "field": "age"}), 400
+
+    if not gender:
+        return jsonify({"message": "Gender is required", "field": "gender"}), 400
+
+    if not phone:
+        return jsonify({"message": "Phone number is required", "field": "phone"}), 400
+    if not re.match(phone_pattern, phone):
+        return jsonify({"message": "Enter a valid 10-digit phone number", "field": "phone"}), 400
+
+    if not email:
+        return jsonify({"message": "Email is required", "field": "email"}), 400
+    if not re.match(email_pattern, email):
+        return jsonify({"message": "Enter a valid email address", "field": "email"}), 400
+
     try:
         db, cursor = get_db()
+
+        cursor.execute("SELECT id FROM patients WHERE username = %s", (username,))
+        if cursor.fetchone():
+            cursor.close()
+            db.close()
+            return jsonify({"message": "Username already exists", "field": "username"}), 400
+
+        cursor.execute("SELECT id FROM patients WHERE email = %s", (email,))
+        if cursor.fetchone():
+            cursor.close()
+            db.close()
+            return jsonify({"message": "Email already exists", "field": "email"}), 400
+
         cursor.execute(
-            "INSERT INTO patients (name, username, password, email, phone, age, gender) VALUES (%s,%s,%s,%s,%s,%s,%s)",
-            (name, username, generate_password_hash(password),
-             data.get('email'), data.get('phone'), data.get('age'), data.get('gender'))
+            """
+            INSERT INTO patients (name, username, password, email, phone, age, gender)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """,
+            (
+                name,
+                username,
+                generate_password_hash(password),
+                email,
+                phone,
+                age,
+                gender
+            )
         )
+
         db.commit()
         patient_id = cursor.lastrowid
-        cursor.close(); db.close()
-        return jsonify({"message": "Registered successfully", "patient_id": patient_id, "username": username, "name": name}), 201
+        cursor.close()
+        db.close()
+
+        return jsonify({
+            "message": "Registered successfully",
+            "patient_id": patient_id,
+            "username": username,
+            "name": name
+        }), 201
+
     except mysql.connector.Error as err:
         return jsonify({"message": str(err)}), 500
-
 
 @app.route('/api/patient/login', methods=['POST'])
 def patient_login():
     data = request.get_json()
-    username, password = data.get('username'), data.get('password')
+    username = (data.get('username') or '').strip()
+    password = (data.get('password') or '').strip()
+
     if not username or not password:
         return jsonify({"message": "Username and password are required"}), 400
+
+    db, cursor = get_db()
+
     try:
-        db, cursor = get_db()
+        is_locked, lock_msg, seconds_remaining = check_lockout(cursor, "patients", username)
+        if is_locked:
+            return jsonify({
+                "message": lock_msg,
+                "seconds_remaining": seconds_remaining
+            }), 429
+
         cursor.execute("SELECT * FROM patients WHERE username = %s", (username,))
-        patient = cursor.fetchone(); cursor.close(); db.close()
-        if patient and patient.get('password') and check_password_hash(patient['password'], password):
-            return jsonify({"message": "Login successful", "patient_id": patient['id'],
-                            "username": patient['username'], "name": patient['name']}), 200
-        return jsonify({"message": "Invalid username or password"}), 401
-    except mysql.connector.Error as err:
-        return jsonify({"message": str(err)}), 500
+        patient = cursor.fetchone()
 
+        if not patient or not patient.get('password') or not check_password_hash(patient['password'], password):
+            record_failed_attempt(cursor, db, "patients", username)
+            return jsonify({"message": "Invalid username or password"}), 401
 
+        reset_lockout(cursor, db, "patients", username)
+
+        return jsonify({
+            "message": "Login successful",
+            "patient_id": patient['id'],
+            "username": patient['username'],
+            "name": patient['name']
+        }), 200
+
+    except Exception as e:
+        print("Patient login error:", e)
+        return jsonify({"message": "Server error"}), 500
+
+    finally:
+        cursor.close()
+        db.close()
+    
 # ── Doctor Auth ───────────────────────────────────────────────────────────────
+@app.route('/api/doctor/login', methods=['POST'])
 @app.route('/api/doctor/login', methods=['POST'])
 def doctor_login():
     data = request.get_json()
-    username, password = data.get('username'), data.get('password')
+    username = (data.get('username') or '').strip()
+    password = (data.get('password') or '').strip()
+
     if not username or not password:
         return jsonify({"message": "Username and password are required"}), 400
-    try:
-        db, cursor = get_db()
-        cursor.execute("SELECT * FROM doctors WHERE username = %s", (username,))
-        doctor = cursor.fetchone(); cursor.close(); db.close()
-        if doctor and doctor.get('password') and check_password_hash(doctor['password'], password):
-            return jsonify({"message": "Login successful", "doctor_id": doctor['id'],
-                            "username": doctor['username'], "name": doctor['name'],
-                            "specialty": doctor['specialty'], "status": doctor['status']}), 200
-        return jsonify({"message": "Invalid username or password"}), 401
-    except mysql.connector.Error as err:
-        return jsonify({"message": str(err)}), 500
 
+    db, cursor = get_db()
+
+    try:
+        is_locked, lock_msg, seconds_remaining = check_lockout(cursor, "doctors", username)
+        if is_locked:
+            return jsonify({
+                "message": lock_msg,
+                "seconds_remaining": seconds_remaining
+            }), 429
+
+        cursor.execute("SELECT * FROM doctors WHERE username = %s", (username,))
+        doctor = cursor.fetchone()
+
+        if not doctor or not doctor.get('password') or not check_password_hash(doctor['password'], password):
+            record_failed_attempt(cursor, db, "doctors", username)
+            return jsonify({"message": "Invalid username or password"}), 401
+
+        reset_lockout(cursor, db, "doctors", username)
+
+        return jsonify({
+            "message": "Login successful",
+            "doctor_id": doctor['id'],
+            "username": doctor['username'],
+            "name": doctor['name'],
+            "specialty": doctor['specialty'],
+            "status": doctor['status']
+        }), 200
+
+    except Exception as e:
+        print("DOCTOR LOGIN ERROR:", e)
+        return jsonify({"message": "Server error"}), 500
+
+    finally:
+        cursor.close()
+        db.close()
 
 # ── Admin: Patients ───────────────────────────────────────────────────────────
 @app.route('/api/patients', methods=['GET'])

@@ -127,27 +127,38 @@ function DoctorLogin() {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [locked, setLocked] = useState(false);
 
   const handleSubmit = async e => {
-    e.preventDefault();
-    setError("");
-    try {
-      const res = await fetch(`${API_URL}/api/doctor/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        localStorage.setItem("doctor", JSON.stringify(data));
-        navigate("/doctor/dashboard");
-      } else {
-        setError(data.message);
-      }
-    } catch {
-      setError("Server connection failed");
+  e.preventDefault();
+  setError("");
+
+  try {
+    const res = await fetch(`${API_URL}/api/doctor/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+
+    if (res.status === 429) {
+      setError(data.message);
+      setLocked(true);
+      return;
     }
-  };
+
+    if (res.ok) {
+      localStorage.setItem("doctor", JSON.stringify(data));
+      navigate("/doctor/dashboard");
+    } else {
+      setError(data.message || "Invalid username or password");
+      setLocked(false);
+    }
+  } catch {
+    setError("Server connection failed");
+  }
+};
 
   return (
     <>
@@ -157,8 +168,11 @@ function DoctorLogin() {
         {/* Left Panel */}
         <div className="auth-left">
           <div className="brand">
-                               <img src="/baysideclinic.png" alt="Bayside Clinical" style={{ width: "72px", height: "72px", borderRadius: "10px", objectFit: "cover" }} />
-
+          <img
+              src="/baysideclinic.png"
+              alt="Bayside Clinical"
+              style={{ width: '150px', marginLeft: '55px' }}
+            />
           </div>
           <div className="portal-badge">🩺 Doctor Portal</div>
           <h1>Manage your patients & schedule</h1>
@@ -183,28 +197,33 @@ function DoctorLogin() {
               <h2>DOCTOR SIGN IN</h2>
               <p className="sub">Enter the credentials set by your admin.</p>
               {error && <div className="error-msg">⚠️ {error}</div>}
+<form onSubmit={handleSubmit}>
+  <div className="form-group">
+    <label className="form-label">Username</label>
+    <input
+      className="form-input"
+      placeholder="Enter your username"
+      value={formData.username}
+      onChange={e => setFormData({ ...formData, username: e.target.value })}
+    />
+  </div>
 
-              <div className="form-group">
-                <label className="form-label">Username</label>
-                <input
-                  className="form-input"
-                  placeholder="Enter your username"
-                  value={formData.username}
-                  onChange={e => setFormData({ ...formData, username: e.target.value })}
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Password</label>
-                <input
-                  className="form-input"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={e => setFormData({ ...formData, password: e.target.value })}
-                />
-              </div>
-              <button className="btn-submit" onClick={handleSubmit}>Sign In as Doctor</button>
-            </div>
+  <div className="form-group">
+    <label className="form-label">Password</label>
+    <input
+      className="form-input"
+      type="password"
+      placeholder="Enter your password"
+      value={formData.password}
+      onChange={e => setFormData({ ...formData, password: e.target.value })}
+    />
+  </div>
+
+  <button type="submit" className="btn-submit" disabled={locked}>
+    {locked ? "Locked" : "Sign In as Doctor"}
+  </button>
+</form>
+  </div>
 
           </div>
         </div>
