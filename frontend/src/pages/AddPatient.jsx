@@ -38,7 +38,7 @@ const styles = `
   .form-card-header p { font-size: 13px; color: #94a3b8; margin-top: 4px; }
   .form-body { padding: 28px; }
 
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start;}
   .form-group { display: flex; flex-direction: column; gap: 6px; }
   .form-group.full { grid-column: 1 / -1; }
   .form-label { font-size: 13px; font-weight: 500; color: #374151; }
@@ -149,37 +149,37 @@ function AddPatient() {
                 {error && <div className="error-msg">⚠️ {error}</div>}
                 {message && <div className="success-msg">✅ {message}</div>}
 
-                <div className="form-grid">
-                  <div className="form-group">
-                    <label className="form-label">Full Name <span>*</span></label>
-                    <input className="form-input" name="name" placeholder="e.g. John Smith" value={formData.name} onChange={handleChange} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Age</label>
-                    <input className="form-input" type="number" name="age" placeholder="e.g. 34" value={formData.age} onChange={handleChange} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Gender</label>
-                    <select className="form-select" name="gender" value={formData.gender} onChange={handleChange}>
-                      <option value="">Select gender</option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Phone Number</label>
-                    <input className="form-input" name="phone" placeholder="e.g. 0412 345 678" value={formData.phone} onChange={handleChange} />
-                  </div>
-                  <div className="form-group full">
-                    <label className="form-label">Email Address</label>
-                    <input className="form-input" type="email" name="email" placeholder="e.g. john@email.com" value={formData.email} onChange={handleChange} />
-                  </div>
-                  <div className="form-group full">
-                    <label className="form-label">Address</label>
-                    <textarea className="form-textarea" name="address" placeholder="Street, Suburb, State, Postcode" value={formData.address} onChange={handleChange} />
-                  </div>
-                </div>
+             <div className="form-grid">
+  <div className="form-group">
+    <label className="form-label">Full Name <span>*</span></label>
+    <input className="form-input" name="name" placeholder="e.g. John Smith" value={formData.name} onChange={handleChange} />
+  </div>
+  <div className="form-group">
+    <label className="form-label">Age</label>
+    <input className="form-input" type="number" name="age" placeholder="e.g. 34" value={formData.age} onChange={handleChange} />
+  </div>
+  <div className="form-group">
+    <label className="form-label">Gender</label>
+    <select className="form-select" name="gender" value={formData.gender} onChange={handleChange}>
+      <option value="">Select gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+  <div className="form-group">
+    <label className="form-label">Phone Number</label>
+    <input className="form-input" name="phone" placeholder="e.g. 0412 345 678" value={formData.phone} onChange={handleChange} />
+  </div>
+  <div className="form-group full">
+    <label className="form-label">Email Address</label>
+    <input className="form-input" type="email" name="email" placeholder="e.g. john@email.com" value={formData.email} onChange={handleChange} />
+  </div>
+  <div className="form-group full">
+    <label className="form-label">Address</label>
+    <textarea className="form-textarea" name="address" placeholder="Street, Suburb, State, Postcode" value={formData.address} onChange={handleChange} />
+  </div>
+</div>
               </div>
 
               <div className="form-footer">

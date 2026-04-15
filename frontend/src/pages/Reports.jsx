@@ -110,9 +110,8 @@ function Reports() {
       <div className="layout">
         <aside className="sidebar">
           <div className="sidebar-brand">
-            <div className="brand-icon">🏥</div>
-            <h2>Bayside Clinical</h2>
-            <p>Management System</p>
+                                  <img src="/baysideclinic.png" alt="Bayside Clinical" style={{ width: "72px", height: "72px", borderRadius: "10px", objectFit: "cover" }} />
+
           </div>
           <nav className="sidebar-nav">
             <div className="nav-section-label">Main Menu</div>
